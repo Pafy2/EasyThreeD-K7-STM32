@@ -1,0 +1,37 @@
+name: Build EasyThreeD K7 rev B
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout firmware
+        uses: actions/checkout@v4
+        with:
+          ref: ET4000PLUS-K7-rev-B
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PlatformIO
+        run: python -m pip install --upgrade platformio
+
+      - name: Build firmware
+        run: pio run -e mks_robin_lite_maple
+
+      - name: Show build files
+        run: |
+          echo "Firmware build output:"
+          find .pio/build/mks_robin_lite_maple -type f
+
+      - name: Upload firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: K7-rev-B-firmware
+          path: .pio/build/mks_robin_lite_maple/
+          if-no-files-found: error
